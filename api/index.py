@@ -1,5 +1,10 @@
+import sys
 import os
-from fastapi import FastAPI, Request, Header, HTTPException
+
+# ルートディレクトリをパスに追加
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from fastapi import FastAPI, Request
 from aiogram import Bot, Dispatcher, types
 from bot.config import BOT_TOKEN
 from bot.handlers import start, levels, categories
@@ -13,15 +18,12 @@ dp.include_router(start.router)
 dp.include_router(levels.router)
 dp.include_router(categories.router)
 
-# Soxta so'rovlardan koranish uchun maxfiy kalit (xohlagan murakkab matningiz)
-WEBHOOK_SECRET = os.getenv("WEBHOOK_SECRET", "my_super_secret_key_123")
+@app.get("/")
+async def root():
+    return {"status": "ok", "message": "Japanese SHIFU Bot is running!"}
 
 @app.post("/api/webhook")
-async def webhook(request: Request, x_telegram_bot_api_secret_token: str = Header(None)):
-    # Telegram yuborgan secret-tokenni tekshirish
-    if x_telegram_bot_api_secret_token != WEBHOOK_SECRET:
-        raise HTTPException(status_code=403, detail="Ruxsat berilmadi")
-        
+async def webhook(request: Request):
     json_str = await request.json()
     update = types.Update(**json_str)
     await dp.feed_update(bot, update)
