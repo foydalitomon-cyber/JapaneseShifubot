@@ -1,8 +1,12 @@
+
 from aiogram import F, Router
 from aiogram.filters import CommandStart
 from aiogram.types import CallbackQuery, Message
 
-from bot.keyboards.inline import language_keyboard, levels_keyboard
+from bot.keyboards.inline import (
+    language_keyboard,
+    levels_keyboard,
+)
 from bot.languages import LANGUAGES, text
 
 
@@ -10,21 +14,16 @@ router = Router()
 
 
 # ============================================================
-# START COMMAND
+# START
 # ============================================================
 
 @router.message(CommandStart())
 async def start_handler(message: Message):
-    welcome_message = (
+    await message.answer(
         "🇯🇵 Japanese SHIFU\n"
         "━━━━━━━━━━━━━━━━━━\n\n"
-        "🌏 Welcome to Japanese SHIFU!\n\n"
-        "Please select your language:\n"
-        "Tilni tanlang / Выберите язык"
-    )
-
-    await message.answer(
-        welcome_message,
+        "🌏 Please select your language:\n"
+        "Tilni tanlang / Выберите язык",
         reply_markup=language_keyboard(),
     )
 
@@ -39,9 +38,9 @@ async def choose_language(callback: CallbackQuery):
         await callback.answer()
         return
 
-    language_code = callback.data.split(":", 1)[1]
+    lang = callback.data.split(":", 1)[1]
 
-    if language_code not in LANGUAGES:
+    if lang not in LANGUAGES:
         await callback.answer(
             "Language not found.",
             show_alert=True,
@@ -49,8 +48,8 @@ async def choose_language(callback: CallbackQuery):
         return
 
     await callback.message.edit_text(
-        text(language_code, "level"),
-        reply_markup=levels_keyboard(),
+        text(lang, "level"),
+        reply_markup=levels_keyboard(lang),
     )
 
     await callback.answer()

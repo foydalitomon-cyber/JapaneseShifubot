@@ -1,8 +1,10 @@
 
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
+from bot.languages import LANGUAGES, text
 
-LANGUAGES = {
+
+LANGUAGE_NAMES = {
     "en": "🇬🇧 English",
     "ru": "🇷🇺 Русский",
     "uz": "🇺🇿 O‘zbekcha",
@@ -16,18 +18,13 @@ LANGUAGES = {
 
 LEVELS = ["N5", "N4", "N3", "N2", "N1"]
 
-CATEGORIES = {
-    "vocab": "📘 Goi — So'zlar",
-    "kanji": "🈶 Kanji",
-    "grammar": "📗 Bunpo — Grammatika",
-    "reading": "📖 Dokkai — O'qish",
-}
+CATEGORIES = ["vocab", "kanji", "grammar", "reading"]
 
 
 def language_keyboard():
     kb = InlineKeyboardBuilder()
 
-    for code, name in LANGUAGES.items():
+    for code, name in LANGUAGE_NAMES.items():
         kb.button(
             text=name,
             callback_data=f"language:{code}",
@@ -37,61 +34,70 @@ def language_keyboard():
     return kb.as_markup()
 
 
-def levels_keyboard():
+def levels_keyboard(lang: str):
     kb = InlineKeyboardBuilder()
 
     for level in LEVELS:
         kb.button(
             text=f"JLPT {level}",
-            callback_data=f"level:{level}",
+            callback_data=f"level:{lang}:{level}",
         )
 
     kb.adjust(2, 2, 1)
     return kb.as_markup()
 
 
-def categories_keyboard(level: str):
+def categories_keyboard(lang: str, level: str):
     kb = InlineKeyboardBuilder()
 
-    for key, title in CATEGORIES.items():
+    for category in CATEGORIES:
         kb.button(
-            text=title,
-            callback_data=f"category:{level}:{key}",
+            text=text(lang, category),
+            callback_data=f"category:{lang}:{level}:{category}",
         )
 
     kb.button(
-        text="⬅️ Darajalar",
-        callback_data="back:levels",
+        text=text(lang, "back_levels"),
+        callback_data=f"back:levels:{lang}",
     )
-    kb.adjust(2, 2, 1)
 
+    kb.adjust(2, 2, 1)
     return kb.as_markup()
 
 
-def lessons_keyboard(level: str, category: str, lessons: list):
+def lessons_keyboard(
+    lang: str,
+    level: str,
+    category: str,
+    lessons: list,
+):
     kb = InlineKeyboardBuilder()
 
     for index, lesson in enumerate(lessons):
         kb.button(
-            text=lesson["title"],
-            callback_data=f"lesson:{level}:{category}:{index}",
+            text=str(lesson.get("title", f"Lesson {index + 1}")),
+            callback_data=f"lesson:{lang}:{level}:{category}:{index}",
         )
 
     kb.button(
-        text="⬅️ Bo'limlar",
-        callback_data=f"level:{level}",
+        text=text(lang, "back_categories"),
+        callback_data=f"back:categories:{lang}:{level}",
     )
 
     kb.adjust(1)
     return kb.as_markup()
 
 
-def back_to_lessons_keyboard(level: str, category: str):
+def back_to_lessons_keyboard(
+    lang: str,
+    level: str,
+    category: str,
+):
     kb = InlineKeyboardBuilder()
 
     kb.button(
-        text="⬅️ Darslar",
-        callback_data=f"category:{level}:{category}",
+        text=text(lang, "back_lessons"),
+        callback_data=f"category:{lang}:{level}:{category}",
     )
 
     return kb.as_markup()
