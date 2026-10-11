@@ -1,1 +1,27 @@
-{}
+
+{
+  "vocab": [
+    {
+      "title": "1-dars: Kundalik hayot",
+      "content": "生活（せいかつ）— seikatsu — kundalik hayot.\n\n必要（ひつよう）— hitsuyou — zarur."
+    }
+  ],
+  "kanji": [
+    {
+      "title": "旅 — Sayohat",
+      "content": "旅（たび）— tabi — sayohat.\n\n旅行（りょこう）— ryokou — sayohat qilish."
+    }
+  ],
+  "grammar": [
+    {
+      "title": "〜と思います",
+      "content": "明日は雨だと思います。\nAshita wa ame da to omoimasu.\nErtaga yomg'ir yog'adi deb o'ylayman."
+    }
+  ],
+  "reading": [
+    {
+      "title": "Qisqa matn: 旅行",
+      "content": "先週、友達と京都へ旅行しました。\n\nTarjima: O'tgan hafta do'stim bilan Kiotoga sayohat qildim."
+    }
+  ]
+}

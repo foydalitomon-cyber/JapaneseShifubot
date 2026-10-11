@@ -1,105 +1,94 @@
+
 import json
-from pathlib import Path
-from html import escape
 
 from aiogram import Router, F
 from aiogram.types import CallbackQuery
-from bot.keyboards.inline import back_to_categories_keyboard
+
+from bot.config import DATA_DIR
+from bot.keyboards.inline import (
+    CATEGORIES,
+    LEVELS,
+    lessons_keyboard,
+    categories_keyboard,
+    back_to_lessons_keyboard,
+)
 
 router = Router()
 
-# JSON fayllarining aniq manzili
-DATA_DIR = Path(__file__).resolve().parents[1] / "data"
 
+def load_lessons(level: str) -> dict:
+    path = DATA_DIR / f"{level.lower()}.json"
 
-def load_level_data(level: str) -> dict:
-    """Kerakli JLPT darajasining JSON ma'lumotlarini yuklaydi."""
-    level = level.upper()
-
-    if level not in {"N5", "N4", "N3", "N2", "N1"}:
-        return {}
-
-    file_path = DATA_DIR / f"{level.lower()}.json"
-
-    if not file_path.is_file():
-        print(f"JSON fayli topilmadi: {file_path}")
+    if not path.is_file():
         return {}
 
     try:
-        with file_path.open("r", encoding="utf-8") as file:
-            data = json.load(file)
-
-        if not isinstance(data, dict):
-            print(f"JSON ichidagi ma'lumot dict emas: {file_path}")
-            return {}
-
-        return data
-
-    except (json.JSONDecodeError, OSError) as error:
-        print(f"JSON o'qish xatosi: {error}")
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
         return {}
 
+    return data if isinstance(data, dict) else {}
 
-@router.callback_query(F.data.startswith("cat:"))
-async def category_handler(callback: CallbackQuery):
-    parts = (callback.data or "").split(":")
 
-    if len(parts) != 3:
-        await callback.answer("Noto'g'ri bo'lim.", show_alert=True)
+@router.callback_query(F.data.startswith("category:"))
+async def choose_category(callback: CallbackQuery):
+    _, level, category = callback.data.split(":", 2)
+
+    if level not in LEVELS or category not in CATEGORIES:
+        await callback.answer("Noto'g'ri tanlov.", show_alert=True)
         return
 
-    _, category, level = parts
-    level = level.upper()
+    data = load_lessons(level)
+    lessons = data.get(category, [])
 
-    category_names = {
-        "goi": "Goi (Lug'at)",
-        "kanji": "Kanji (Iyerogliflar)",
-        "bunpo": "Bunpo (Grammatika)",
-        "dokkai": "Dokkai (O'qish)",
-    }
-
-    if category not in category_names:
-        await callback.answer("Bunday bo'lim mavjud emas.", show_alert=True)
-        return
-
-    data = load_level_data(level)
-    cat_data = data.get(category)
-
-    title = category_names[category]
-
-    if cat_data is None or cat_data == "":
-        content = "Hozircha bu bo'limda ma'lumotlar tayyorlanmoqda..."
-    elif isinstance(cat_data, (dict, list)):
-        content = json.dumps(
-            cat_data,
-            ensure_ascii=False,
-            indent=2
-        )
-    else:
-        content = str(cat_data)
-
-    # HTML maxsus belgilarini xavfsiz chiqarish
-    text = (
-        f"<b>{escape(level)} - {escape(title)}</b>\n\n"
-        f"{escape(content)}"
-    )
-
-    # Telegram bitta xabarda 4096 belgigacha qabul qiladi.
-    if len(text) > 4000:
-        text = text[:3950] + "\n\nMa'lumot qisqartirildi. JSON faylini kichik bo'limlarga ajratish kerak."
-
-    try:
+    if not lessons:
         await callback.message.edit_text(
-            text=text,
-            reply_markup=back_to_categories_keyboard(level),
-            parse_mode="HTML",
+            f"{CATEGORIES[category]}\n\n"
+            f"JLPT {level} uchun bu bo'limda darslar hali yo'q.",
+            reply_markup=categories_keyboard(level),
         )
-    except Exception as error:
-        print(f"Telegram xabari yangilanmadi: {error}")
+        await callback.answer()
+        return
+
+    await callback.message.edit_text(
+        f"{CATEGORIES[category]}\n\n"
+        "Darsni tanlang:",
+        reply_markup=lessons_keyboard(level, category, lessons),
+    )
+    await callback.answer()
+
+
+@router.callback_query(F.data.startswith("lesson:"))
+async def show_lesson(callback: CallbackQuery):
+    _, level, category, index_text = callback.data.split(":", 3)
+
+    if level not in LEVELS or category not in CATEGORIES:
+        await callback.answer("Noto'g'ri tanlov.", show_alert=True)
+        return
+
+    data = load_lessons(level)
+    lessons = data.get(category, [])
+
+    try:
+        index = int(index_text)
+        lesson = lessons[index]
+    except (ValueError, IndexError, TypeError):
         await callback.answer(
-            "Xabarni ko'rsatishda xato yuz berdi.",
-            show_alert=True
+            "Dars topilmadi.",
+            show_alert=True,
         )
         return
 
+    title = str(lesson.get("title", "Dars"))
+    content = str(lesson.get("content", "Dars mazmuni mavjud emas."))
+
+    text = f"📚 {title}\n━━━━━━━━━━━━━━━━\n\n{content}"
+
+    if len(text) > 4000:
+        text = text[:3950] + "\n\n... Davomi keyin qo'shiladi."
+
+    await callback.message.edit_text(
+        text,
+        reply_markup=back_to_lessons_keyboard(level, category),
+    )
     await callback.answer()

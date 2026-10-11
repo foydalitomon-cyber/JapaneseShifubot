@@ -1,30 +1,53 @@
-import sys
+
 import os
 
-# ルートディレクトリをパスに追加
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from aiogram import Bot, Dispatcher
+from aiogram.types import Update
+from fastapi import FastAPI, Request, HTTPException
 
-from fastapi import FastAPI, Request
-from aiogram import Bot, Dispatcher, types
-from bot.config import BOT_TOKEN
-from bot.handlers import start, levels, categories
+from bot.handlers import (
+    start_router,
+    levels_router,
+    categories_router,
+)
 
-app = FastAPI()
+app = FastAPI(title="Japanese SHIFU")
 
-bot = Bot(token=BOT_TOKEN)
 dp = Dispatcher()
+dp.include_router(start_router)
+dp.include_router(levels_router)
+dp.include_router(categories_router)
 
-dp.include_router(start.router)
-dp.include_router(levels.router)
-dp.include_router(categories.router)
 
 @app.get("/")
-async def root():
-    return {"status": "ok", "message": "Japanese SHIFU Bot is running!"}
+async def home():
+    return {"status": "Japanese SHIFU is running"}
+
 
 @app.post("/api/webhook")
-async def webhook(request: Request):
-    json_str = await request.json()
-    update = types.Update(**json_str)
-    await dp.feed_update(bot, update)
-    return {"ok": True}
+async def telegram_webhook(request: Request):
+    token = os.getenv("BOT_TOKEN")
+
+    if not token:
+        raise HTTPException(
+            status_code=500,
+            detail="BOT_TOKEN environment variable is missing",
+        )
+
+    try:
+        payload = await request.json()
+        update = Update.model_validate(payload)
+
+        async with Bot(token=token) as bot:
+            await dp.feed_update(bot, update)
+
+        return {"ok": True}
+
+    except HTTPException:
+        raise
+    except Exception:
+        # Token yoki ichki xatolarni javobga chiqarmaymiz.
+        raise HTTPException(
+            status_code=500,
+            detail="Webhook processing failed",
+        )

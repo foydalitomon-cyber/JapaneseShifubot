@@ -1,6 +1,31 @@
+
 {
-  "goi": "• 私 (わたし) - Men\n• 本 (ほん) - Kitob\n• 食べる (たべる) - Yemoq\n• 行く (いく) - Bormoq",
-  "kanji": "• 日 (nichi/hi) - Kunchiqar, kun\n• 月 (getsu/tsuki) - Oy\n• 木 (moku/ki) - Daraxt\n• 水 (sui/mizu) - Suv",
-  "bunpo": "1. **～は～です** - ... bu ... dir.\n2. **～を～ます** - ... ni qilaman.\n3. **～に/へ行きます** - ... ga boraman.",
-  "dokkai": "私の一日 (Mening bir kunim):\n朝7時に起きます。朝ごはんを食べて、学校へ行きます。"
+  "vocab": [
+    {
+      "title": "1-dars: Salomlashish",
+      "content": "こんにちは — Konnichiwa — Salom.\n\nありがとう — Arigatou — Rahmat.\n\nすみません — Sumimasen — Kechirasiz."
+    },
+    {
+      "title": "2-dars: Tanishish",
+      "content": "わたし — Watashi — Men.\n\nなまえ — Namae — Ism.\n\nはじめまして — Hajimemashite — Tanishganimdan xursandman."
+    }
+  ],
+  "kanji": [
+    {
+      "title": "日 — Quyosh, kun",
+      "content": "日 — hi / nichi — kun, quyosh.\n\n日本 — Nihon — Yaponiya."
+    }
+  ],
+  "grammar": [
+    {
+      "title": "です — Oddiy tasdiq",
+      "content": "わたしは学生です。\nWatashi wa gakusei desu.\nMen talabaman.\n\nです (desu) gapni odobli tasdiq shaklida tugatadi."
+    }
+  ],
+  "reading": [
+    {
+      "title": "Qisqa matn: わたし",
+      "content": "わたしは学生です。\n日本語を勉強します。\n\nTarjima: Men talabaman. Yapon tilini o'rganaman."
+    }
+  ]
 }
