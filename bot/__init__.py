@@ -1,0 +1,2 @@
+
+# Japanese SHIFU bot package.

@@ -1,0 +1,31 @@
+
+{
+  "vocab": [
+    {
+      "title": "1-dars: Salomlashish",
+      "content": "こんにちは — Konnichiwa — Salom.\n\nありがとう — Arigatou — Rahmat.\n\nすみません — Sumimasen — Kechirasiz."
+    },
+    {
+      "title": "2-dars: Tanishish",
+      "content": "わたし — Watashi — Men.\n\nなまえ — Namae — Ism.\n\nはじめまして — Hajimemashite — Tanishganimdan xursandman."
+    }
+  ],
+  "kanji": [
+    {
+      "title": "日 — Quyosh, kun",
+      "content": "日 — hi / nichi — kun, quyosh.\n\n日本 — Nihon — Yaponiya."
+    }
+  ],
+  "grammar": [
+    {
+      "title": "です — Oddiy tasdiq",
+      "content": "わたしは学生です。\nWatashi wa gakusei desu.\nMen talabaman.\n\nです (desu) gapni odobli tasdiq shaklida tugatadi."
+    }
+  ],
+  "reading": [
+    {
+      "title": "Qisqa matn: わたし",
+      "content": "わたしは学生です。\n日本語を勉強します。\n\nTarjima: Men talabaman. Yapon tilini o'rganaman."
+    }
+  ]
+}
