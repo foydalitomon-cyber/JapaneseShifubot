@@ -1,6 +1,19 @@
 
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
+
+LANGUAGES = {
+    "en": "🇬🇧 English",
+    "ru": "🇷🇺 Русский",
+    "uz": "🇺🇿 O‘zbekcha",
+    "hi": "🇮🇳 हिन्दी",
+    "ar": "🇸🇦 العربية",
+    "id": "🇮🇩 Indonesia",
+    "my": "🇲🇲 မြန်မာ",
+    "ja": "🇯🇵 日本語",
+    "zh": "🇨🇳 中文",
+}
+
 LEVELS = ["N5", "N4", "N3", "N2", "N1"]
 
 CATEGORIES = {
@@ -9,6 +22,19 @@ CATEGORIES = {
     "grammar": "📗 Bunpo — Grammatika",
     "reading": "📖 Dokkai — O'qish",
 }
+
+
+def language_keyboard():
+    kb = InlineKeyboardBuilder()
+
+    for code, name in LANGUAGES.items():
+        kb.button(
+            text=name,
+            callback_data=f"language:{code}",
+        )
+
+    kb.adjust(3, 3, 3)
+    return kb.as_markup()
 
 
 def levels_keyboard():
@@ -33,7 +59,10 @@ def categories_keyboard(level: str):
             callback_data=f"category:{level}:{key}",
         )
 
-    kb.button(text="⬅️ Darajalar", callback_data="back:levels")
+    kb.button(
+        text="⬅️ Darajalar",
+        callback_data="back:levels",
+    )
     kb.adjust(2, 2, 1)
 
     return kb.as_markup()
@@ -59,8 +88,10 @@ def lessons_keyboard(level: str, category: str, lessons: list):
 
 def back_to_lessons_keyboard(level: str, category: str):
     kb = InlineKeyboardBuilder()
+
     kb.button(
         text="⬅️ Darslar",
         callback_data=f"category:{level}:{category}",
     )
+
     return kb.as_markup()

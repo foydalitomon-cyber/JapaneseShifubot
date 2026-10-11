@@ -3,7 +3,7 @@ from aiogram import Router
 from aiogram.filters import CommandStart
 from aiogram.types import Message
 
-from bot.keyboards.inline import levels_keyboard
+from bot.keyboards.inline import language_keyboard
 
 router = Router()
 
@@ -13,7 +13,8 @@ async def start_handler(message: Message):
     await message.answer(
         "🇯🇵 Japanese SHIFU\n"
         "━━━━━━━━━━━━━━━━\n\n"
-        "Yapon tilini bosqichma-bosqich o'rganing.\n\n"
-        "JLPT darajangizni tanlang:",
-        reply_markup=levels_keyboard(),
+        "🌏 Welcome to Japanese SHIFU!\n\n"
+        "Please select your language:\n"
+        "Tilni tanlang / Выберите язык",
+        reply_markup=language_keyboard(),
     )
